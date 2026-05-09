@@ -8,24 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; overflow: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
         .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); }
-        .scroll-container { height: 100vh; overflow-y: auto; scroll-behavior: smooth; }
+        .scroll-container { min-h-screen; }
         
-        @media (min-width: 1024px) {
-            .main-layout { display: block; height: auto; } 
-            .scroll-container { height: 100vh; }
-        }
-
-        .smart-pin {
-            position: absolute;
-            transform: translate(-50%, -100%);
-            cursor: pointer;
-            pointer-events: auto;
-            transition: all 0.2s ease;
-        }
-        .smart-pin:hover { transform: translate(-50%, -110%) scale(1.1); z-index: 50; }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -68,9 +54,9 @@
 </head>
 <body>
     <div id="nav-placeholder"></div>
-    <div id="appBody" class="main-layout">
-        <div class="scroll-container p-4 md:p-6 lg:p-8 space-y-8 bg-slate-50">
-             <header>
+    <div class="scroll-container flex flex-col items-center py-8 px-4">
+        <div class="w-full max-w-4xl">
+            <header class="mb-8">
                 <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Property Value & Mortgage Affordability Calculator </h1>
                 <p class="text-slate-500 text-sm">Valuation benchmark & financial modelling.</p>
             </header>
@@ -221,11 +207,11 @@
                     Manage Benchmarks
                 </button>
 
-                <div id="resultsList" class="space-y-4">
+                <div id="resultsList" class="space-y-4 pb-12">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Market Benchmarks</h3>
                     </div>
-                    <div id="comparisonGrid" class="space-y-4 pb-20">
+                    <div id="comparisonGrid" class="space-y-4">
                         <div id="emptyState" class="text-center py-12 bg-white rounded-2xl border-2 border-dashed border-slate-200 p-6">
                             <p class="text-slate-400 text-xs">Search or add properties to compare values.</p>
                         </div>
@@ -233,6 +219,7 @@
                 </div>
             </div>
         </div>
+    </div>
 
     <!-- Logic Explanation Modal (Mobile Tooltip) -->
     <div id="logicModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-6 z-[110] backdrop-blur-sm" onclick="closeLogicModal()">
