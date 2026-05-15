@@ -74,7 +74,7 @@
                     <div class="mb-4">
                         <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Postcode Search</label>
                         <div class="flex gap-2">
-                            <input type="text" id="mainPostcode" placeholder="Enter Postcode..." class="flex-1 p-2 rounded-xl border border-slate-200 text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-400">
+                            <input type="text" id="mainPostcode" placeholder="Enter Postcode..." class="flex-1 p-2 rounded-xl border border-slate-200 text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
                             <button id="searchBtnMain" onclick="startSearch('mainPostcode')" class="bg-indigo-600 text-white px-3 rounded-xl hover:bg-indigo-700 transition-colors">
                                 <svg id="searchIconMain" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                 <svg id="loaderMain" class="w-4 h-4 animate-spin hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -173,7 +173,7 @@
 
                         <div class="p-4 bg-slate-900 rounded-xl text-white space-y-3">
                             <div class="flex items-center gap-2 mb-1">
-                                <svg class="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.83 2.942-2.247 2.972H3.6c-1.416-.03-2.997-1.638-2.247-2.972L8.257 3.1z" clip-rule="evenodd"></path></svg>
+                                <svg class="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.338-.213 2.981-1.742 2.981H4.42c-1.53 0-2.493-1.643-1.742-2.981L8.257 3.1z" clip-rule="evenodd"></path></svg>
                                 <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Rate Stress Test</span>
                             </div>
                             <div class="grid grid-cols-2 gap-x-4 gap-y-2">
@@ -196,6 +196,85 @@
                             <div class="flex justify-between items-center text-sm">
                                 <span class="text-slate-500 font-medium">Est. Stamp Duty</span>
                                 <span id="stampDuty" class="font-bold text-slate-900">£0</span>
+                            </div>
+                        </div>
+
+                        <!-- SDLT Section with First-Time Buyer Toggle -->
+                        <div class="pt-4 border-t border-emerald-200 space-y-4">
+                            <!-- First-Time Buyer Toggle -->
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                <label class="text-[10px] font-bold text-slate-600 uppercase mb-3 block">First-Time Buyer Status</label>
+                                <!-- Radio buttons for Yes/No first-time buyer selection -->
+                                <div class="flex gap-4">
+                                    <!-- Radio button for First-Time Buyer = Yes -->
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="firstTimeBuyer" value="yes" id="ftbYes" onchange="handleFirstTimeBuyerChange()" class="w-4 h-4">
+                                        <span class="text-sm font-medium text-slate-700">Yes, I'm a first-time buyer</span>
+                                    </label>
+                                    <!-- Radio button for First-Time Buyer = No -->
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="firstTimeBuyer" value="no" id="ftbNo" onchange="handleFirstTimeBuyerChange()" checked class="w-4 h-4">
+                                        <span class="text-sm font-medium text-slate-700">No, I've bought before</span>
+                                    </label>
+                                </div>
+                                <!-- Warning message displayed when first-time buyer is selected but property price exceeds £500,000 -->
+                                <div id="ftbWarning" class="mt-3 p-3 bg-amber-100 border border-amber-300 rounded-lg hidden">
+                                    <p class="text-[9px] text-amber-800 font-semibold">⚠️ First-time buyer relief only applies to properties under £500,000. Your property exceeds this limit, so standard SDLT rates will apply.</p>
+                                </div>
+                            </div>
+
+                            <!-- Additional Property Section - disabled when first-time buyer = Yes -->
+                            <div id="additionalPropertySection" class="space-y-3 opacity-50 pointer-events-none transition-opacity duration-300">
+                                <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
+                                    <label class="text-[10px] font-bold text-slate-600 uppercase mb-3 block">Property Purchase Details</label>
+                                    <!-- Toggle for indicating if this is an additional property -->
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="isAdditionalProperty" onchange="handleAdditionalPropertyChange()" class="w-4 h-4">
+                                        <label for="isAdditionalProperty" class="text-sm font-medium text-slate-700">This is an additional property (I own another)</label>
+                                    </div>
+                                </div>
+
+                                <!-- Replacing Main Residence Section - only visible when additional property = Yes -->
+                                <div id="replacingMainResidenceSection" class="bg-orange-50 p-4 rounded-xl border border-orange-100 hidden transition-all">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <input type="checkbox" id="isReplacingMainResidence" onchange="handleReplacingMainResidenceChange()" class="w-4 h-4">
+                                        <label for="isReplacingMainResidence" class="text-sm font-medium text-slate-700">I'm replacing my main residence</label>
+                                    </div>
+
+                                    <!-- Date picker for when previous main residence was sold - only visible when replacing main residence = Yes -->
+                                    <div id="saleDateSection" class="mt-3 hidden">
+                                        <label class="text-[10px] font-bold text-slate-600 uppercase block mb-2">Previous Residence Sale Date</label>
+                                        <input type="date" id="previousSaleDate" onchange="handleSaleDateChange()" class="w-full p-2 rounded-lg border border-orange-200 text-sm">
+                                        <!-- Info message displayed when no date is selected but replacing main residence is checked -->
+                                        <div id="saleDateWarning" class="mt-2 p-3 bg-orange-100 border border-orange-300 rounded-lg hidden">
+                                            <p class="text-[9px] text-orange-800 font-semibold leading-relaxed">ℹ️ You will not pay the extra 5% SDLT if both of the following apply: the property you're buying is replacing your main residence AND your previous main residence was sold within 36 months of completing your new purchase. If you have not sold your main residence on the day you complete your new purchase, you'll have to pay higher rates.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SDLT Breakdown Section -->
+                            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                                <h3 class="text-[10px] font-bold text-emerald-700 uppercase mb-3">SDLT Breakdown</h3>
+                                <!-- Container for SDLT calculation details -->
+                                <div id="sdltBreakdown" class="space-y-2 text-sm text-slate-700 font-medium">
+                                    <div class="flex justify-between"><span>0% on first £250,000:</span><span id="sdlt0" class="font-bold">£0</span></div>
+                                    <div class="flex justify-between"><span>5% on £250,001 - £925,000:</span><span id="sdlt5" class="font-bold">£0</span></div>
+                                    <div class="flex justify-between"><span>10% on £925,001 - £1,500,000:</span><span id="sdlt10" class="font-bold">£0</span></div>
+                                    <div class="flex justify-between"><span>12% above £1,500,000:</span><span id="sdlt12" class="font-bold">£0</span></div>
+                                </div>
+                                <!-- Separator line between breakdown details and total -->
+                                <div class="border-t border-emerald-300 my-3"></div>
+                                <!-- Display of additional property surcharge (5%) if applicable -->
+                                <div id="additionalPropertySurchargeRow" class="flex justify-between text-sm font-bold text-slate-700 hidden">
+                                    <span>5% Additional Property Surcharge:</span>
+                                    <span id="sdltSurcharge" class="text-red-600">£0</span>
+                                </div>
+                                <!-- Total SDLT amount owed after all calculations -->
+                                <div class="flex justify-between text-lg font-black text-emerald-700 mt-3">
+                                    <span>Total SDLT:</span>
+                                    <span id="sdltTotal">£0</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -240,7 +319,7 @@
             <div class="mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
                 <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Postcode Search</label>
                 <div class="flex gap-2">
-                    <input type="text" id="modalPostcode" placeholder="SW1A 1AA" class="flex-1 p-2 rounded-lg border border-slate-200 text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-400">
+                    <input type="text" id="modalPostcode" placeholder="SW1A 1AA" class="flex-1 p-2 rounded-lg border border-slate-200 text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
                     <button id="searchBtnModal" onclick="startSearch('modalPostcode')" class="bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700">
                         <svg id="searchIconModal" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         <svg id="loaderModal" class="w-4 h-4 animate-spin hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -271,44 +350,71 @@
                 <div><label class="text-[9px] font-bold uppercase text-slate-500">Beds</label><input type="number" id="manBeds" class="w-full p-3 border border-slate-200 rounded-xl text-sm"></div>
                 <div><label class="text-[9px] font-bold uppercase text-slate-500">Baths</label><input type="number" id="manBaths" class="w-full p-3 border border-slate-200 rounded-xl text-sm"></div>
                 <div class="col-span-2"><label class="text-[9px] font-bold uppercase text-slate-500">Reception Rooms</label><input type="number" id="manReceptions" class="w-full p-3 border border-slate-200 rounded-xl text-sm"></div>
-                <button id="submitBtn" onclick="submitManual()" class="col-span-2 py-4 mt-2 bg-indigo-600 text-white rounded-2xl font-black shadow-lg hover:bg-indigo-700 transition-colors uppercase tracking-widest">Submit</button>
+                <button id="submitBtn" onclick="submitManual()" class="col-span-2 py-4 mt-2 bg-indigo-600 text-white rounded-2xl font-black shadow-lg hover:bg-indigo-700 transition-colors uppercase">Submit</button>
             </div>
         </div>
     </div>
 
     <script>
-        const apiKey = ""; // Leave this empty; the system fills it on execution
+        // API key placeholder - filled by system on execution
+        const apiKey = "";
+        
+        // Array to store property comparison data
         let comparisonProperties = [];
+        
+        // Current unit selection (sqft or m2)
         let currentUnit = 'sqft';
-        let calcMode = 'deposit'; 
+        
+        // Current calculation mode (deposit or monthly)
+        let calcMode = 'deposit';
+        
+        // Deposit type (amount or percent)
         let depositType = 'amount';
+        
+        // First-time buyer status (true/false)
+        let isFirstTimeBuyer = false;
+        
+        // Additional property status (true/false)
+        let isAdditionalProperty = false;
+        
+        // Replacing main residence status (true/false)
+        let isReplacingMainResidence = false;
 
+        // Initialize app on page load
         window.onload = () => {
             initApp();
             handleLTVChange();
         };
 
+        // Parse numeric value from input field, removing all non-numeric characters
         function parseVal(id) {
             const val = document.getElementById(id).value;
             if (!val) return 0;
+            // Remove all non-numeric characters except decimal point
             const cleaned = val.replace(/[^0-9.]/g, '');
             return parseFloat(cleaned) || 0;
         }
 
+        // Format number as locale string with thousand separators
         function formatNumber(num) {
             if (num === undefined || num === null) return "0";
+            // Format number with commas as thousand separators and max 2 decimal places
             return num.toLocaleString('en-GB', { maximumFractionDigits: 2 });
         }
 
+        // Initialize app event listeners and run initial calculations
         function initApp() {
+            // Array of input field IDs that should trigger calculations on change
             const reactiveInputs = [
                 'mainPrice', 'mainArea', 'interestRate', 'termYears', 
                 'mainBeds', 'mainBaths', 'mainReceptions', 'calcInputVal'
             ];
             
+            // Attach input event listeners to all reactive inputs
             reactiveInputs.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
+                    // Trigger calculations whenever user types in these fields
                     el.addEventListener('input', () => {
                         if(id === 'mainPrice' && calcMode === 'deposit') {
                              handleLTVChange(); 
@@ -318,11 +424,14 @@
                 }
             });
             
+            // Run calculations on app start with default values
             runCalculations();
         }
 
+        // Set deposit type between amount (£) and percentage (%)
         function setDepositType(type) {
             depositType = type;
+            // Get button elements for deposit type toggle
             const btnAmt = document.getElementById('depTypeAmt');
             const btnPct = document.getElementById('depTypePct');
             const symbol = document.getElementById('depositSymbol');
@@ -330,6 +439,7 @@
             const subtext = document.getElementById('depositSubtext');
 
             if(type === 'amount') {
+                // Update UI to show amount is selected
                 btnAmt.classList.add('toggle-active');
                 btnPct.classList.remove('toggle-active');
                 symbol.innerText = "£";
@@ -337,12 +447,14 @@
                 subtext.classList.add('hidden');
                 handleLTVChange();
             } else {
+                // Update UI to show percentage is selected
                 btnPct.classList.add('toggle-active');
                 btnAmt.classList.remove('toggle-active');
                 symbol.innerText = "%";
                 label.innerText = "Deposit Percentage (%)";
                 subtext.classList.remove('hidden');
                 
+                // Convert current deposit amount to percentage
                 const price = parseVal('mainPrice');
                 const deposit = parseVal('calcInputVal');
                 const perc = price > 0 ? (deposit / price) * 100 : 10;
@@ -351,21 +463,27 @@
             runCalculations();
         }
 
+        // Update deposit/monthly input when LTV is changed
         function handleLTVChange() {
+            // Get current input values
             const price = parseVal('mainPrice');
             const ltvPerc = parseFloat(document.getElementById('ltvSelect').value) || 90;
             const rate = parseFloat(document.getElementById('interestRate').value) || 0;
             const years = parseFloat(document.getElementById('termYears').value) || 25;
             
+            // Update input based on calculation mode
             if(calcMode === 'deposit') {
                 if(depositType === 'amount') {
+                    // Calculate deposit amount as (price * deposit percentage)
                     const deposit = price * (1 - (ltvPerc / 100));
                     document.getElementById('calcInputVal').value = formatNumber(Math.round(deposit));
                 } else {
+                    // Calculate deposit percentage from LTV
                     const depPerc = 100 - ltvPerc;
                     document.getElementById('calcInputVal').value = formatNumber(depPerc);
                 }
             } else {
+                // Calculate monthly payment from loan amount
                 const loan = price * (ltvPerc / 100);
                 const monthly = getMonthlyPayment(loan, rate, years);
                 document.getElementById('calcInputVal').value = formatNumber(Math.round(monthly));
@@ -373,8 +491,10 @@
             runCalculations('ltvSelect');
         }
 
+        // Switch between deposit and monthly budget calculation modes
         function setCalcMode(mode) {
             calcMode = mode;
+            // Get mode toggle buttons
             const btnDep = document.getElementById('modeBtnDeposit');
             const btnMon = document.getElementById('modeBtnMonthly');
             const label = document.getElementById('calcInputLabel');
@@ -384,6 +504,7 @@
             const subtext = document.getElementById('depositSubtext');
 
             if(mode === 'deposit') {
+                // Update UI for deposit mode
                 btnDep.classList.add('mode-active');
                 btnMon.classList.remove('mode-active');
                 label.innerText = depositType === 'amount' ? "Deposit Amount (£)" : "Deposit Percentage (%)";
@@ -392,6 +513,7 @@
                 depSymbol.innerText = depositType === 'amount' ? "£" : "%";
                 if(depositType === 'percent') subtext.classList.remove('hidden');
             } else {
+                // Update UI for monthly budget mode
                 btnMon.classList.add('mode-active');
                 btnDep.classList.remove('mode-active');
                 label.innerText = "Monthly Budget (£)";
@@ -404,140 +526,394 @@
             runCalculations();
         }
 
+        // Handle first-time buyer selection change
+        function handleFirstTimeBuyerChange() {
+            // Get the selected radio button value
+            const ftbYes = document.getElementById('ftbYes').checked;
+            isFirstTimeBuyer = ftbYes;
+            
+            // Get the additional property section
+            const additionalPropertySection = document.getElementById('additionalPropertySection');
+            
+            // Disable/enable additional property section based on first-time buyer status
+            if(isFirstTimeBuyer) {
+                // First-time buyers can't use additional property options
+                additionalPropertySection.classList.add('opacity-50', 'pointer-events-none');
+                document.getElementById('isAdditionalProperty').checked = false;
+                document.getElementById('isReplacingMainResidence').checked = false;
+                isAdditionalProperty = false;
+                isReplacingMainResidence = false;
+                document.getElementById('replacingMainResidenceSection').classList.add('hidden');
+                document.getElementById('saleDateSection').classList.add('hidden');
+            } else {
+                // Non-first-time buyers can use additional property options
+                additionalPropertySection.classList.remove('opacity-50', 'pointer-events-none');
+            }
+            
+            // Check if property price exceeds £500k and show warning
+            const price = parseVal('mainPrice');
+            const ftbWarning = document.getElementById('ftbWarning');
+            if(isFirstTimeBuyer && price > 500000) {
+                ftbWarning.classList.remove('hidden');
+            } else {
+                ftbWarning.classList.add('hidden');
+            }
+            
+            // Recalculate SDLT with new first-time buyer status
+            runCalculations();
+        }
+
+        // Handle additional property checkbox change
+        function handleAdditionalPropertyChange() {
+            // Get additional property checkbox value
+            isAdditionalProperty = document.getElementById('isAdditionalProperty').checked;
+            
+            // Get replacing main residence section
+            const replacingMainResidenceSection = document.getElementById('replacingMainResidenceSection');
+            
+            // Show/hide replacing main residence section based on additional property status
+            if(isAdditionalProperty) {
+                replacingMainResidenceSection.classList.remove('hidden');
+            } else {
+                replacingMainResidenceSection.classList.add('hidden');
+                document.getElementById('isReplacingMainResidence').checked = false;
+                document.getElementById('saleDateSection').classList.add('hidden');
+                isReplacingMainResidence = false;
+            }
+            
+            // Recalculate SDLT with new additional property status
+            runCalculations();
+        }
+
+        // Handle replacing main residence checkbox change
+        function handleReplacingMainResidenceChange() {
+            // Get replacing main residence checkbox value
+            isReplacingMainResidence = document.getElementById('isReplacingMainResidence').checked;
+            
+            // Get sale date section
+            const saleDateSection = document.getElementById('saleDateSection');
+            const saleDateWarning = document.getElementById('saleDateWarning');
+            
+            // Show/hide sale date section based on replacing main residence status
+            if(isReplacingMainResidence) {
+                saleDateSection.classList.remove('hidden');
+                saleDateWarning.classList.remove('hidden');
+            } else {
+                saleDateSection.classList.add('hidden');
+                saleDateWarning.classList.add('hidden');
+                document.getElementById('previousSaleDate').value = '';
+            }
+            
+            // Recalculate SDLT with new replacing main residence status
+            runCalculations();
+        }
+
+        // Handle previous sale date change
+        function handleSaleDateChange() {
+            // Get the selected sale date
+            const saleDate = document.getElementById('previousSaleDate').value;
+            
+            // Get sale date warning
+            const saleDateWarning = document.getElementById('saleDateWarning');
+            
+            // If a date is selected, hide the warning
+            if(saleDate) {
+                saleDateWarning.classList.add('hidden');
+            } else {
+                saleDateWarning.classList.remove('hidden');
+            }
+            
+            // Recalculate SDLT with new sale date
+            runCalculations();
+        }
+
+        // Run all calculations for mortgage affordability and SDLT
         function runCalculations(triggerId) {
+            // Extract input values
             const price = parseVal('mainPrice');
             const area = parseVal('mainArea');
             const rate = parseFloat(document.getElementById('interestRate').value) || 0;
             const years = parseFloat(document.getElementById('termYears').value) || 25;
             const inputVal = parseVal('calcInputVal');
 
+            // Initialize calculation variables
             let loan = 0;
             let deposit = 0;
             let monthly = 0;
 
+            // Calculate based on selected mode
             if (calcMode === 'deposit') {
                 if(depositType === 'amount') {
+                    // Use deposit amount directly
                     deposit = inputVal;
                 } else {
+                    // Calculate deposit amount from percentage
                     deposit = price * (inputVal / 100);
                     const calcDisp = document.getElementById('depositCalculatedValue');
                     if(calcDisp) calcDisp.innerText = `£${Math.round(deposit).toLocaleString()}`;
                 }
+                // Calculate loan amount as price minus deposit
                 loan = Math.max(0, price - deposit);
+                // Calculate monthly payment
                 monthly = getMonthlyPayment(loan, rate, years);
                 document.getElementById('secondaryVal').innerText = `£${Math.round(monthly).toLocaleString()}`;
             } else {
+                // Calculate from monthly budget
                 monthly = inputVal;
+                // Calculate loan amount from monthly payment
                 const r = rate / 100 / 12;
                 const n = years * 12;
                 if (r > 0) {
+                    // Use mortgage formula to reverse-calculate loan from payment
                     loan = monthly * ((Math.pow(1 + r, n) - 1) / (r * Math.pow(1 + r, n)));
                 } else {
                     loan = monthly * n;
                 }
+                // Calculate deposit as difference between price and loan
                 deposit = Math.max(0, price - loan);
                 document.getElementById('secondaryVal').innerText = `£${Math.round(deposit).toLocaleString()}`;
             }
 
+            // Calculate actual LTV percentage
             const actualLTV = price > 0 ? (loan / price) * 100 : 0;
             const roundedLTV = Math.round(actualLTV);
             
+            // Update LTV selector if not the trigger of this calculation
             if(triggerId !== 'ltvSelect') {
                 updateLTVSelector(roundedLTV);
             }
 
+            // Update display values
             document.getElementById('ltvDisplay').innerText = `${roundedLTV}%`;
             document.getElementById('mainPPSFDisplay').innerText = `£${(price / (area || 1)).toFixed(2)}`;
-            document.getElementById('stampDuty').innerText = `£${calculateSDLT(price).toLocaleString()}`;
             
+            // Calculate and display SDLT
+            const sdltResult = calculateSDLT(price);
+            document.getElementById('stampDuty').innerText = `£${sdltResult.total.toLocaleString()}`;
+            
+            // Update SDLT breakdown display
+            updateSDLTBreakdown(price, sdltResult);
+            
+            // Update stress test calculations
             updateStressTests(loan, years, rate);
+            
+            // Re-render comparison properties list
             renderComparisonList();
         }
 
+        // Update LTV selector to include the calculated LTV if not already present
         function updateLTVSelector(value) {
+            // Get the LTV dropdown
             const select = document.getElementById('ltvSelect');
             const valStr = value.toString();
             let exists = false;
+            
+            // Check if value already exists in dropdown
             for (let i = 0; i < select.options.length; i++) {
                 if (select.options[i].value === valStr) {
                     exists = true;
                     break;
                 }
             }
+            
+            // Add new option if it doesn't exist and is valid
             if (!exists && value >= 0 && value <= 100) {
                 const newOpt = document.createElement('option');
                 newOpt.value = valStr;
                 newOpt.text = `${valStr}%`;
                 select.add(newOpt);
             }
+            
+            // Select the calculated LTV
             select.value = valStr;
         }
 
+        // Toggle between square feet and square meters
         function toggleUnit(val) {
             currentUnit = val;
+            // Get unit select elements
             const mainU = document.getElementById('mainUnitSelect');
             const modU = document.getElementById('modalUnitSelect');
             if(mainU) mainU.value = val;
             if(modU) modU.value = val;
+            
+            // Update all unit text labels
             document.querySelectorAll('.unit-text').forEach(l => l.innerText = currentUnit === 'sqft' ? 'Sq Ft' : 'm²');
+            
+            // Recalculate with new unit
             runCalculations();
         }
 
+        // Calculate SDLT (Stamp Duty Land Tax) based on property price and buyer status
         function calculateSDLT(price) {
+            // Check if property exceeds first-time buyer limit and first-time buyer status is true
+            const canUseFirstTimeBuyerRelief = isFirstTimeBuyer && price <= 500000;
+            
             let sdlt = 0;
-            if (price > 250000) {
-                if (price <= 925000) sdlt += (price - 250000) * 0.05;
-                else {
-                    sdlt += (925000 - 250000) * 0.05;
-                    if (price <= 1500000) sdlt += (price - 925000) * 0.10;
-                    else {
-                        sdlt += (1500000 - 925000) * 0.10;
-                        sdlt += (price - 1500000) * 0.12;
+            let breakdown = { rate0: 0, rate5: 0, rate10: 0, rate12: 0, surcharge: 0 };
+
+            if (canUseFirstTimeBuyerRelief) {
+                // First-time buyer rates: 0% up to £300k, 5% from £300k to £500k
+                if (price > 300000) {
+                    // 5% on the portion above £300,000
+                    breakdown.rate5 = (price - 300000) * 0.05;
+                    sdlt += breakdown.rate5;
+                }
+            } else {
+                // Standard rates for non-first-time buyers or properties over £500k
+                if (price > 250000) {
+                    if (price <= 925000) {
+                        // 5% on £250,001 to £925,000
+                        breakdown.rate5 = (price - 250000) * 0.05;
+                        sdlt += breakdown.rate5;
+                    } else {
+                        // 5% from £250k to £925k
+                        breakdown.rate5 = (925000 - 250000) * 0.05;
+                        sdlt += breakdown.rate5;
+                        
+                        if (price <= 1500000) {
+                            // 10% from £925k to property price
+                            breakdown.rate10 = (price - 925000) * 0.10;
+                            sdlt += breakdown.rate10;
+                        } else {
+                            // 10% from £925k to £1.5m
+                            breakdown.rate10 = (1500000 - 925000) * 0.10;
+                            sdlt += breakdown.rate10;
+                            
+                            // 12% above £1.5m
+                            breakdown.rate12 = (price - 1500000) * 0.12;
+                            sdlt += breakdown.rate12;
+                        }
                     }
                 }
             }
-            return sdlt;
+
+            // Add 5% surcharge for additional properties if applicable
+            if (isAdditionalProperty) {
+                // Check if replacing main residence and within 36 months
+                const saleDate = document.getElementById('previousSaleDate').value;
+                let removeSurcharge = false;
+
+                if (isReplacingMainResidence && saleDate) {
+                    // Calculate days between sale and today
+                    const saleDateObj = new Date(saleDate);
+                    const today = new Date();
+                    const daysDiff = Math.floor((today - saleDateObj) / (1000 * 60 * 60 * 24));
+                    
+                    // Check if within 36 months (1095 days)
+                    if (daysDiff <= 1095) {
+                        removeSurcharge = true;
+                    }
+                }
+
+                // Apply surcharge if not removing it
+                if (!removeSurcharge) {
+                    breakdown.surcharge = sdlt * 0.05;
+                    sdlt += breakdown.surcharge;
+                }
+            }
+
+            return { total: sdlt, breakdown: breakdown };
         }
 
+        // Update SDLT breakdown display with calculation details
+        function updateSDLTBreakdown(price, sdltResult) {
+            // Get breakdown elements
+            const sdlt0 = document.getElementById('sdlt0');
+            const sdlt5 = document.getElementById('sdlt5');
+            const sdlt10 = document.getElementById('sdlt10');
+            const sdlt12 = document.getElementById('sdlt12');
+            const sdltSurchargeRow = document.getElementById('additionalPropertySurchargeRow');
+            const sdltSurcharge = document.getElementById('sdltSurcharge');
+            const sdltTotal = document.getElementById('sdltTotal');
+
+            // Update breakdown display based on first-time buyer status
+            const breakdown = sdltResult.breakdown;
+
+            if (isFirstTimeBuyer && price <= 500000) {
+                // First-time buyer breakdown
+                sdlt0.innerText = '£0';
+                sdlt5.innerText = `£${breakdown.rate5.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+                sdlt10.innerText = '£0';
+                sdlt12.innerText = '£0';
+            } else {
+                // Standard breakdown
+                sdlt0.innerText = '£0';
+                sdlt5.innerText = `£${breakdown.rate5.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+                sdlt10.innerText = `£${breakdown.rate10.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+                sdlt12.innerText = `£${breakdown.rate12.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+            }
+
+            // Show/hide surcharge row based on whether surcharge applies
+            if (breakdown.surcharge > 0) {
+                sdltSurchargeRow.classList.remove('hidden');
+                sdltSurcharge.innerText = `£${breakdown.surcharge.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+            } else {
+                sdltSurchargeRow.classList.add('hidden');
+            }
+
+            // Update total SDLT display
+            sdltTotal.innerText = `£${sdltResult.total.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+        }
+
+        // Calculate monthly mortgage payment using standard mortgage formula
         function getMonthlyPayment(principal, annualRate, years) {
+            // Return 0 if principal is 0 or negative
             if (principal <= 0) return 0;
+            
+            // Convert annual rate to monthly decimal
             const r = annualRate / 100 / 12;
             const n = years * 12;
+            
+            // If rate is 0, calculate simple division
             if (r === 0) return principal / n;
+            
+            // Use mortgage formula: M = P * [r(1+r)^n] / [(1+r)^n - 1]
             return (principal * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
         }
 
+        // Update stress test payments showing impact of rate increases
         function updateStressTests(loan, years, currentRate) {
+            // Get stress test display elements
             const s2 = document.getElementById('stress2');
             const s3 = document.getElementById('stress3');
             const s4 = document.getElementById('stress4');
             const s5 = document.getElementById('stress5');
             
+            // Calculate monthly payment at each stress rate
             if(s2) s2.innerText = `£${Math.round(getMonthlyPayment(loan, currentRate + 2, years)).toLocaleString()}`;
             if(s3) s3.innerText = `£${Math.round(getMonthlyPayment(loan, currentRate + 3, years)).toLocaleString()}`;
             if(s4) s4.innerText = `£${Math.round(getMonthlyPayment(loan, currentRate + 4, years)).toLocaleString()}`;
             if(s5) s5.innerText = `£${Math.round(getMonthlyPayment(loan, currentRate + 5, years)).toLocaleString()}`;
         }
 
+        // Search for properties near postcode using Gemini API
         async function startSearch(inputId) {
+            // Get postcode from input field
             const postcode = document.getElementById(inputId).value.trim();
             if (!postcode) return;
 
+            // Determine if this is main search or modal search
             const isMain = inputId === 'mainPostcode';
             const btn = document.getElementById(isMain ? 'searchBtnMain' : 'searchBtnModal');
             const icon = document.getElementById(isMain ? 'searchIconMain' : 'searchIconModal');
             const loader = document.getElementById(isMain ? 'loaderMain' : 'loaderModal');
 
+            // Disable button and show loader
             if(btn) btn.disabled = true;
             if(icon) icon.classList.add('hidden');
             if(loader) loader.classList.remove('hidden');
         
+            // Initialize retry counter
             let retries = 0;
             const maxRetries = 5;
             
+            // Create API request function with retries
             const makeRequest = async () => {
-                const systemPrompt = "You are a real estate data assistant. Your task is to find 5 ACTUAL property listings currently or recently for sale near the specified postcode. You MUST return accurate, real data with actual addresses, prices, and property details. Return only valid JSON.";
+                // System prompt instructs API to search for actual property listings
+                const systemPrompt = "You are a real estate data assistant. Your task is to find 5 ACTUAL property listings currently or recently for sale near the specified postcode. You MUST return REAL, verified data - no fictional properties. Search for actual MLS or property portal listings.";
                 
+                // Prepare API payload
                 const payload = {
                     contents: [{ parts: [{ text: `Search for real estate listings near ${postcode}.` }] }],
                     systemInstruction: { parts: [{ text: systemPrompt }] },
@@ -568,37 +944,43 @@
                     }
                 };
 
+                // Make fetch request to Gemini API
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
+                // Throw error if response not ok
                 if (!response.ok) throw new Error(`API error: ${response.status}`);
                 return await response.json();
             };
 
+            // Attempt to fetch with retry logic
             const attemptFetch = async () => {
                 try {
+                    // Make API request
                     const result = await makeRequest();
                     const jsonContent = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     if (!jsonContent) throw new Error("Empty response");
                     
+                    // Parse JSON response
                     const data = JSON.parse(jsonContent);
                     
+                    // Add listings to comparison properties if found
                     if (data.listings && Array.isArray(data.listings) && data.listings.length > 0) {
-                        // Merge results into comparison array
                         comparisonProperties = [...comparisonProperties, ...data.listings];
-                        
-                        // Ensure main app state re-calculates and re-renders
                         runCalculations();
                         
+                        // Close modal if this is modal search
                         if (!isMain) closeModal();
                     } else {
                         console.warn("No listings found in the area.");
                     }
                 } catch (err) {
+                    // Retry if max retries not reached
                     if (retries < maxRetries) {
+                        // Exponential backoff: 2^retries * 1000ms
                         const delay = Math.pow(2, retries) * 1000;
                         retries++;
                         await new Promise(r => setTimeout(r, delay));
@@ -606,6 +988,7 @@
                     }
                     console.error('Search failed after retries:', err);
                 } finally {
+                    // Re-enable button and hide loader
                     if(btn) btn.disabled = false;
                     if(icon) icon.classList.remove('hidden');
                     if(loader) loader.classList.add('hidden');
@@ -615,13 +998,16 @@
             await attemptFetch();
         }
 
+        // Add target property to comparison benchmarks
         function addTargetToBenchmarks() {
+            // Extract target property details
             const price = parseVal('mainPrice');
             const area = parseVal('mainArea');
             const beds = parseInt(document.getElementById('mainBeds').value) || 0;
             const baths = parseInt(document.getElementById('mainBaths').value) || 0;
             const receptions = parseInt(document.getElementById('mainReceptions').value) || 0;
 
+            // Check if target property already exists
             const existingIdx = comparisonProperties.findIndex(p => p.isTarget);
             const targetProp = {
                 address: "Target Property (Ref)",
@@ -630,6 +1016,7 @@
                 x: 50, y: 50
             };
 
+            // Replace existing target or add new one
             if (existingIdx !== -1) {
                 comparisonProperties[existingIdx] = targetProp;
             } else {
@@ -638,28 +1025,35 @@
             runCalculations();
         }
 
+        // Open manual property entry modal
         function addManualEntry() { 
+            // Get modal elements
             const editIdx = document.getElementById('editIndex');
             const modTitle = document.getElementById('modalTitle');
             if(editIdx) editIdx.value = "-1";
             if(modTitle) modTitle.innerText = "Add Benchmark";
             
+            // Clear all form fields
             ['manName', 'manPrice', 'manArea', 'manBeds', 'manBaths', 'manReceptions'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.value = "";
             });
             
+            // Show modal
             const mod = document.getElementById('manualModal');
             if(mod) mod.classList.remove('hidden'); 
         }
 
+        // Edit existing benchmark property
         function editBenchmark(index) {
+            // Get property data
             const prop = comparisonProperties[index];
             const editIdx = document.getElementById('editIndex');
             const modTitle = document.getElementById('modalTitle');
             if(editIdx) editIdx.value = index;
             if(modTitle) modTitle.innerText = "Edit Property";
             
+            // Map property data to form fields
             const fieldMap = {
                 manName: prop.address,
                 manPrice: formatNumber(prop.price),
@@ -669,20 +1063,24 @@
                 manReceptions: prop.receptions
             };
             
+            // Populate form fields with property data
             Object.entries(fieldMap).forEach(([id, val]) => {
                 const el = document.getElementById(id);
                 if(el) el.value = val;
             });
             
+            // Show modal
             const mod = document.getElementById('manualModal');
             if(mod) mod.classList.remove('hidden');
         }
 
+        // Close manual entry modal
         function closeModal() { 
             const mod = document.getElementById('manualModal');
             if(mod) mod.classList.add('hidden'); 
         }
 
+        // Show logic explanation modal with custom text
         function showLogicModal(text) {
             const textEl = document.getElementById('logicModalText');
             const mod = document.getElementById('logicModal');
@@ -690,15 +1088,19 @@
             if(mod) mod.classList.remove('hidden');
         }
 
+        // Close logic explanation modal
         function closeLogicModal() {
             const mod = document.getElementById('logicModal');
             if(mod) mod.classList.add('hidden');
         }
 
+        // Submit manual property entry or edit
         function submitManual() {
+            // Get edit index to determine if adding or editing
             const indexVal = document.getElementById('editIndex').value;
             const index = parseInt(indexVal);
             
+            // Extract form field values
             const prop = {
                 address: document.getElementById('manName').value || "Unnamed Property",
                 price: parseVal('manPrice'),
@@ -711,7 +1113,9 @@
             };
 
             if (index >= 0) {
+                // Editing existing property
                 if (comparisonProperties[index].isTarget) {
+                    // Update target property in main form
                     document.getElementById('mainPrice').value = formatNumber(prop.price);
                     document.getElementById('mainArea').value = formatNumber(prop.area);
                     document.getElementById('mainBeds').value = prop.beds;
@@ -720,39 +1124,52 @@
                 }
                 comparisonProperties[index] = { ...comparisonProperties[index], ...prop };
             } else {
+                // Adding new property
                 comparisonProperties.push(prop);
             }
+            
+            // Close modal and recalculate
             closeModal();
             runCalculations();
         }
 
+        // Render comparison properties list with details and valuation metrics
         function renderComparisonList() {
+            // Get container for comparison grid
             const container = document.getElementById('comparisonGrid');
             if (!container) return;
+            
+            // Show empty state if no properties
             if (comparisonProperties.length === 0) {
                 container.innerHTML = `<div id="emptyState" class="text-center py-12 bg-white rounded-2xl border-2 border-dashed border-slate-200 p-6">
                             <p class="text-slate-400 text-xs">Search or add properties to compare values.</p>
                         </div>`;
                 return;
             }
+            
+            // Clear container
             container.innerHTML = '';
             
+            // Get target property price and area for comparison
             const targetPrice = parseVal('mainPrice');
             const targetArea = parseVal('mainArea');
             const targetAreaConverted = currentUnit === 'sqft' ? targetArea : (targetArea / 10.764);
             const targetPPSF = targetPrice / (targetAreaConverted || 1);
 
+            // Sort properties to show target first
             const sortedList = [...comparisonProperties].sort((a, b) => {
                 if (a.isTarget) return -1;
                 if (b.isTarget) return 1;
                 return 0;
             });
 
+            // Render each property card
             sortedList.forEach((prop) => {
                 const actualIdx = comparisonProperties.indexOf(prop);
                 const areaDisplay = currentUnit === 'sqft' ? prop.area : (prop.area / 10.764);
                 const ppsf = prop.price / (areaDisplay || 1);
                 
+                // Create comparison tag showing price per unit relative to target
                 let tag = '';
                 if (!prop.isTarget) {
                     const diff = ppsf - targetPPSF;
@@ -764,14 +1181,17 @@
                     let colorClass = "";
 
                     if (Math.abs(diff) < 0.01) {
+                        // Price per unit is equal
                         label = `price per ${unitLabel} equal`;
                         tooltipText = `This property has the exact same value per unit as your target property (£${targetPPSF.toFixed(2)}/unit).`;
                         colorClass = "bg-slate-100 text-slate-600";
                     } else if (diff > 0) {
+                        // Price per unit is higher
                         label = `price per ${unitLabel} Above`;
                         tooltipText = `This property is more expensive per unit (£${ppsf.toFixed(2)}) compared to your target (£${targetPPSF.toFixed(2)}).`;
                         colorClass = "bg-rose-100 text-rose-600";
                     } else {
+                        // Price per unit is lower
                         label = `price per ${unitLabel} below`;
                         tooltipText = `This property is cheaper per unit (£${ppsf.toFixed(2)}) compared to your target (£${targetPPSF.toFixed(2)}).`;
                         colorClass = "bg-emerald-100 text-emerald-600";
@@ -783,6 +1203,7 @@
                               </div>`;
                 }
 
+                // Create property card
                 const card = document.createElement('div');
                 card.className = `glass-card p-5 rounded-2xl shadow-sm border-l-4 ${prop.isTarget ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-300'} animate-fade-in relative group`;
                 card.innerHTML = `
@@ -793,6 +1214,7 @@
                         </div>
                         <div class="flex gap-2">
                             <button onclick="editBenchmark(${actualIdx})" class="opacity-0 group-hover:opacity-100 text-[10px] font-bold text-indigo-600 uppercase transition-opacity">Edit</button>
+                            <button onclick="comparisonProperties.splice(${actualIdx}, 1); renderComparisonList();" class="opacity-0 group-hover:opacity-100 text-[10px] font-bold text-red-600 uppercase transition-opacity">Delete</button>
                         </div>
                     </div>
                     <div class="flex justify-between items-end">
